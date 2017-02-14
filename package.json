@@ -1,0 +1,33 @@
+{
+  "name": "jazz-web-form",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "bell": "^8.5.0",
+    "dotenv": "^4.0.0",
+    "hapi": "^16.1.0",
+    "inert": "^4.1.0",
+    "nunjucks-hapi": "^2.1.0",
+    "path": "^0.12.7",
+    "request": "^2.79.0",
+    "tough-cookie": "^2.3.2",
+    "vision": "^4.1.1",
+    "xml2js": "^0.4.17"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mtdjr/jazz-web-form.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mtdjr/jazz-web-form/issues"
+  },
+  "homepage": "https://github.com/mtdjr/jazz-web-form#readme"
+}

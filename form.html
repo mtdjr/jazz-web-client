@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+{% include "head.html" %}
+<body style="padding-top: 70px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-offset-1 col-md-10">
+        <div class="form-horizontal" id="submitform">
+          <legend>
+            <h2>{{title}}</h2></legend>
+          <div class="form-group">
+            <label class="col-md-2 control-label" for="summary">Summary</label>
+            <div class="col-md-8">
+              <input id="summary" name="summary" type="text" placeholder="" class="form-control input-md" v-model="summary">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2 control-label" for="project">Project Area</label>
+            <div class="col-md-8">
+              <select id="project" name="project" class="form-control" v-model="projectArea" v-on:change="getMembers()">
+                  <option value=""></option>
+                  {% for area in projectAreas %}
+                    <option value="{{area.itemId}}" >{{area.name}}</option>
+                  {% endfor %}
+                </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2 control-label" for="assignee">Assign To</label>
+            <div class="col-md-8">
+              <select id="assignee" name="assignee" class="form-control" v-model="assignee">
+                <option value="Any">Any</option>
+                <option v-for="member in members" v-bind:value="member">${member.name}</option>
+              </select>
+            </div>
+          </div>
+          <!--div class="form-group">
+            <label class="col-md-2 control-label" for="urgency">Urgency</label>
+            <div class="col-md-8">
+              <label class="radio-inline" for="urgency-0"><input type="radio" name="urgency" id="urgency-0" value="1" v-model="urgency">1 day</label>
+              <label class="radio-inline" for="urgency-1"><input type="radio" name="urgency" id="urgency-1" value="2" v-model="urgency">2 days</label>
+              <label class="radio-inline" for="urgency-2"><input type="radio" name="urgency" id="urgency-2" value="3" v-model="urgency">3 days</label>
+              <label class="radio-inline" for="urgency-3"><input type="radio" name="urgency" id="urgency-3" value="4" v-model="urgency">4 days</label>
+            </div>
+          </div-->
+          <div class="form-group">
+            <label class="col-md-2 control-label" for="description">Description</label>
+            <div class="col-md-8">
+              <textarea class="form-control" id="description" name="description" v-model="description"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2 control-label" for="submit"></label>
+            <div class="col-md-8">
+              <p v-if="formError"><strong>Form Error!</strong></p>
+              <p v-if="incompleteForm"><strong>Please complete all form fields.</strong></p>
+              <p v-if="submitSuccess"><strong>Work item submitted successfully!</strong></p>
+              <button id="submit" name="submit" class="btn btn-inverse" v-on:click="submitForm()">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var submitform = new Vue({
+      delimiters: ['${', '}'],
+      el: '#submitform',
+      data: {
+        summary: '',
+        projectArea: '',
+        assignee: [],
+        //urgency: '',
+        description: '',
+        members: [],
+        formError: false,
+        incompleteForm: false,
+        submitSuccess: false
+      },
+      methods: {
+        submitForm: function() {
+          var _this = this;
+          if (this.summary != '' && this.projectArea != '' && this.assignee != '' /*&& this.urgency != ''*/) {
+            this.incompleteForm = false;
+            let dataModel = {
+              summary: this.summary,
+              projectArea: this.projectArea,
+              assignee: this.assignee.id,
+              //urgency: this.urgency,
+              description: this.description
+            };
+            axios.post('/', dataModel).then(function(response) {
+                _this.formError = false;
+                _this.submitSuccess = true;
+              }).catch(function(error) {
+                if (error.response.status === 401) {
+                  _this.formError = true;
+                }
+              });
+          } else {
+            this.incompleteForm = true;
+          }
+        },
+        getMembers: function() {
+          var _this = this;
+          if (this.members != []) {
+            this.members.splice(0, this.members.length);
+          }
+          if (this.projectArea != '') {
+            axios.get('/rest/getMembers/' + this.projectArea).then(function(response) {
+              response.data.map(function(item) {
+                _this.members.push({
+                  name: item.name[0],
+                  id: item.itemId[0]
+                });
+              })
+            });
+          } else {} // do nothing
+        }
+      }
+    });
+  </script>
+  {% include "footer.html" %}
+</body>
+</html>
